@@ -1,17 +1,22 @@
 const express = require("express")
 const router = new express.Router()
 const User = require("../models/user")
-
+const auth = require("../middleware/auth")
 
 router.post("/users", async(req,res) => {
 
     const user = new User(req.body)
 
+    
+
     try {
     
         await user.save()
 
-        res.status(201).send("Success")
+        const token = await user.generateAuthToken()
+
+
+        res.status(201).send({ user, token})
     
     } catch(error) {
     
@@ -22,18 +27,41 @@ router.post("/users", async(req,res) => {
   
 })
 
-router.get("/users", async(req,res) => {
+router.post("/users/login", async(req,res) => {
 
+
+    
     try {
     
-        const users = await User.find()
-        res.send(users)
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+
+        const token = await user.generateAuthToken()
+        
+        res.send({ user, token})
+        
     
     } catch(error) {
     
-        res.status(500).send(error)
+        res.status(400).send()    
     
     }
+})
+
+router.get("/users/me", auth, async(req,res) => {
+
+
+    res.send(req.user)
+    
+    // try {
+    
+    //     const users = await User.find()
+    //     res.send(users)
+    
+    // } catch(error) {
+    
+    //     res.status(500).send(error)
+    
+    // }
     
 
 })
@@ -79,7 +107,17 @@ router.patch("/users/:id", async(req,res) => {
     
     try {
     
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        const user = await User.findById(req.params.id)
+
+        updates.forEach( x=>{
+            user[x] = req.body[x]
+        })
+        
+        await user.save()
+
+
+        
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
 
 
         if (!user) {

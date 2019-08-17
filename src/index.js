@@ -4,27 +4,6 @@ const port = process.env.PORT || 3000
 require("./db/mongoose")
 const userRouter = require("./routers/user")
 const taskRouter = require("./routers/task")
-const jwt = require("jsonwebtoken")
-
-
-
-// app.use((req,res,next) => {
-
-//     if (req.method === "GET") {
-//         console.log("hi")
-//         res.status(400).send("You don't Get Get")
-//     } else {
-//         next()
-//     }
-// })
-
-
-// app.use((req,res,next)=>{
-
-//     console.log("Site under maintenance!")
-    
-//     res.status(503).send("Site under maintenance!")
-// })
 
 
 app.use(express.json())
@@ -33,25 +12,26 @@ app.use(taskRouter)
 
 
 
-
-
-
-
-
 app.listen(port, ()=>{
     console.log("Server is up on port " + port)
 })
 
+const Task = require("./models/task")
+const User = require("./models/user")
+const main = async () => {
 
-const myfunction = async() => {
+    // const task = await Task.findById("5d57d22fa6761d96b6a466c2")
 
-    const token =  jwt.sign({ _id: "abc123" }, "seaisvastandthereismuchtoeat", { expiresIn: "7 days"})
-     console.log(token)
+    // await task.populate("owner").execPopulate()
     
-    const data = jwt.verify(token, "seaisvastandthereismuchtoeat")
-    console.log(data)
+    // console.log(task.owner)
+
+
+    const user = await User.findById("5d57d122c7ab2b8783dedf26")
+    await user.populate("tasks").execPopulate()
+    console.log(user.tasks)
+
+    
 }
 
-
-
-myfunction()
+main()

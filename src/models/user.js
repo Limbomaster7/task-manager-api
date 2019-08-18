@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema({
     
 
     }]
+}, {
+
+    timestamps: true
+    
 })
 
 userSchema.methods.toJSON = function() {
@@ -135,7 +139,7 @@ userSchema.pre("remove", async function(next) {
 
     await Task.deleteMany({ owner: user._id })
 
-    
+
 
     next()
     

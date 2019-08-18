@@ -18,16 +18,18 @@ const taskSchema = new mongoose.Schema( {
         required: true,
         ref: "User"
     }
+}, {
+    timestamps: true
 })
 
 
-taskSchema.pre("save", function(next) {
+// taskSchema.pre("save", function(next) {
 
-    console.log(this)
+//     console.log(this)
     
-    next()
+//     next()
     
-})
+// })
 
 
 const Task = mongoose.model("Task", taskSchema)
